@@ -26,8 +26,8 @@ fi
 A=$RANDOM%$MAXARG
 B=$RANDOM%$MAXARG
 #Fork off powerstat with 0 delay
-powerstat -d 0 -a $PSTAT_GRANULARITY $PSTAT_SAMPLES > $2 2>&1 &
+powerstat -d 0 $PSTAT_GRANULARITY $PSTAT_SAMPLES > $2 2>&1 &
 #Run program
 $1 $EXEC_MODE $EXEC_ARG $A $B > $3
 #Kill powerstat
-kill $!
+kill -s SIGINT $!
