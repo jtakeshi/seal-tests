@@ -39,7 +39,8 @@ int main(int argc, char ** argv){
   }
 
   int index = optind;
-  if(argc-index != 1){
+  //Leave to allow for script compatibility
+  if(argc-index < 1){
     cout << "Require exactly one integer argument!" << endl;
     return 0;
   }

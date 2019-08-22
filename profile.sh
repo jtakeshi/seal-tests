@@ -3,7 +3,7 @@
 #Assumes calc is installed, to do float division for total number of samples
 MAXARG=128
 #Time to run powerstat for (seconds)
-PSTAT_TIME=500
+PSTAT_TIME=10000
 #Measurements must be at least 0.5 sec apart
 PSTAT_GRANULARITY=0.5
 PSTAT_SAMPLES=$(calc $PSTAT_TIME / $PSTAT_GRANULARITY)
@@ -14,7 +14,8 @@ if [ $PSTAT_SAMPLES -lt 960 ]
 fi 
 #How to run program: -t for time mode, -n for number of iterations
 EXEC_MODE=-n
-EXEC_ARG=5
+#Change to smaller values for relinearization, mult, and square
+EXEC_ARG=100000
 #Check if root - can get extra information from powerstat
 : '
 if [ "$EUID" -ne 0 ]
