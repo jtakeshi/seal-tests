@@ -28,7 +28,7 @@ SEALContainer(unsigned int poly_modulus_degree = 4096, unsigned int plain_modulu
 	parms->set_poly_modulus_degree(poly_modulus_degree);
   parms->set_coeff_modulus(CoeffModulus::BFVDefault(poly_modulus_degree));
   //Create context
-  parms->set_plain_modulus(1024);
+  parms->set_plain_modulus(plain_modulus);
   context = SEALContext::Create(*parms);
   //Get key classes
   keygen = new KeyGenerator(context);
@@ -50,6 +50,15 @@ SEALContainer(unsigned int poly_modulus_degree = 4096, unsigned int plain_modulu
   delete evaluator;
   delete decryptor;
   delete encoder;
+}
+
+//Sets all ciphertext moduli
+void set_ctext_moduli(uint64_t newmod){
+  auto mods = parms->coeff_modulus();
+  for(auto & x : mods){
+    x = newmod;
+  }
+  parms->set_coeff_modulus(mods);
 }
 
 //Returns a reference so the application can avoid one level of indirection

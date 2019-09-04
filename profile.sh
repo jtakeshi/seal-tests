@@ -15,7 +15,7 @@ fi
 #How to run program: -t for time mode, -n for number of iterations
 EXEC_MODE=-n
 #Change to smaller values for relinearization, mult, and square
-EXEC_ARG=100000
+EXEC_ARG=1000000
 #Check if root - can get extra information from powerstat
 : '
 if [ "$EUID" -ne 0 ]

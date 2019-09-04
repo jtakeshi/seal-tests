@@ -6,8 +6,10 @@ import sys
 infile = sys.argv[1]
 nums = [float(i) for i in open(infile, 'r').read().strip().split()]
 #Set size
-print(str(len(nums)))
+print("Size: " + str(len(nums)))
 #Set avg
-print(str(np.average(nums)))
+print("Avg: " + str(np.average(nums)))
 #Set stddev
-print(str(np.std(nums)))
+print("Stdev: " + str(np.std(nums)))
+#Set sum
+print("Sum: " + str(np.sum(nums)))
