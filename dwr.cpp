@@ -92,8 +92,6 @@ int main(int argc, char ** argv){
       	i--;
       	continue;
       }
-     
-      int result = divide_round_up(x, y);
       //Get time in ms
       double duration = (clock() - start)/(double) CLOCKS_PER_MS;
       cout << duration << endl;

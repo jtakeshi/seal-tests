@@ -2,7 +2,6 @@
 #include <cstddef>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <ctime>
 #include <getopt.h>
 #include <seal/seal.h>
@@ -15,9 +14,6 @@ using namespace std;
 using namespace seal;
 
 int main(int argc, char ** argv){
-
-  //Prevent output synch
-  ios_base::sync_with_stdio(false);
 
 
   char c;
@@ -65,23 +61,19 @@ int main(int argc, char ** argv){
   }
   //Get reference to Encryptor to obviate one indirection
   Evaluator & ev = sc.ev_ref();
-  //Construct output stream
-  ostringstream oss;
-  //Prepare result
-  Ciphertext result;
+
 
   //Run by iterations
   if(num_iterations){
     for(unsigned int i = 0; i < num_iterations; i++){
       unsigned int idx1 = rand() % num_ciphertexts;
       unsigned int idx2 = rand() % num_ciphertexts;
+      Ciphertext result;
       double start = clock();
-      ev.add(ctexts[idx1], ctexts[idx2], result);
+      ev.multiply(ctexts[idx1], ctexts[idx2], result);
       //Get time in ms
       double duration = (clock() - start)/(double) CLOCKS_PER_MS;
-      //Clear up memory used by result
-      result.release();
-      oss << duration << '\n';
+      cout << duration << endl;
     }
   }
   //Run by time
@@ -90,16 +82,14 @@ int main(int argc, char ** argv){
     while ((clock() - loop_start)/(double) CLOCKS_PER_SEC <= runtime){
       unsigned int idx1 = rand() % num_ciphertexts;
       unsigned int idx2 = rand() % num_ciphertexts;
+      Ciphertext result;
       double start = clock();
-      ev.add(ctexts[idx1], ctexts[idx2], result);
+      ev.multiply(ctexts[idx1], ctexts[idx2], result);
       //Get time in ms
       double duration = (clock() - start)/(double) CLOCKS_PER_MS;
-      result.release();
-      oss << duration << '\n';
+      cout << duration << endl;
     }
   }
-
-  cout << oss.str() << flush;
 
   delete[] ctexts;
 
