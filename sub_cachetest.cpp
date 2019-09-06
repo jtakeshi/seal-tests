@@ -2,8 +2,8 @@
 #include <cstddef>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <ctime>
-#include <stdexcept>
 #include <getopt.h>
 #include <seal/seal.h>
 
@@ -13,15 +13,17 @@
 
 using namespace std;
 using namespace seal;
-using namespace seal::util;
 
 int main(int argc, char ** argv){
+
+  //Prevent output synch
+  ios_base::sync_with_stdio(false);
 
 
   char c;
   unsigned int num_iterations = 0;
   unsigned int runtime = 0;
-  //bool default_powers = true;
+  unsigned int num_ciphertexts = 0;
   while((c = getopt(argc, argv, "n:t:c:")) != -1){
     switch(c){
       case 'n':{
@@ -33,8 +35,8 @@ int main(int argc, char ** argv){
         break;
       }
       case 'c':{
-        //Do nothing - don't need a number of ciphertexts
-        break;
+      	num_ciphertexts = atoi(optarg);
+      	break;
       }
     }
   }
@@ -44,75 +46,62 @@ int main(int argc, char ** argv){
     cout << "Specify exactly one of -n (iterations) or -t (time)" << endl;
     return 0;
   }
-
-  /*
-  int index = optind;
-  if(argc-index != 2){
-    cout << "Require exactly two integer arguments!" << endl;
-    return 0;
+  if(!num_ciphertexts){
+  	cout << "Specify a nonzero number of ciphertexts" << endl;
+  	return 0;
   }
+
+  srand(time(NULL));
 
   //variables declaration
-  int x,y,x_copy;
-  x = atoi(argv[index++]);
-  y = atoi(argv[index]);
-  */
 
-  /*
   //Setup SEAL
   SEALContainer sc;
-  if(!default_powers){
-    sc.set_ctext_moduli(1<<15);
+  //Get ciphertext array
+  Ciphertext * ctexts = new Ciphertext[num_ciphertexts];
+  for(unsigned int j = 0; j < num_ciphertexts; j++){
+  	Plaintext pt = sc.encoder->encode(rand());
+  	sc.encryptor->encrypt(pt, ctexts[j]);
   }
-  //Get plaintexts
-  Plaintext px = sc.encoder->encode(x);
-  Plaintext py = sc.encoder->encode(y);
-  //Encrypt
-  Ciphertext encx, ency, encr;
-  sc.encryptor->encrypt(px, encx);
-  sc.encryptor->encrypt(py, ency);
   //Get reference to Encryptor to obviate one indirection
   Evaluator & ev = sc.ev_ref();
-  */
+  //Construct output stream
+  ostringstream oss;
+  //Prepare result
+  Ciphertext result;
 
-  uint64_t x, y;
-  srand(5);
   //Run by iterations
   if(num_iterations){
     for(unsigned int i = 0; i < num_iterations; i++){
-      while((x = rand()) < 0){}
-      while((y = rand()) <= 0){}
-      double start = clock();	
-      try{
-      	uint64_t result = divide_round_up(x, y);
-      }
-      catch(std::out_of_range & ex){
-      	i--;
-      	continue;
-      }
+      unsigned int idx1 = rand() % num_ciphertexts;
+      unsigned int idx2 = rand() % num_ciphertexts;
+      double start = clock();
+      ev.sub(ctexts[idx1], ctexts[idx2], result);
       //Get time in ms
       double duration = (clock() - start)/(double) CLOCKS_PER_MS;
-      cout << duration << endl;
+      //Clear up memory used by result
+      result.release();
+      oss << duration << '\n';
     }
   }
   //Run by time
   else{
     double loop_start = clock();
     while ((clock() - loop_start)/(double) CLOCKS_PER_SEC <= runtime){
-      while((x = rand()) < 0){}
-      while((y = rand()) <= 0){}	
+      unsigned int idx1 = rand() % num_ciphertexts;
+      unsigned int idx2 = rand() % num_ciphertexts;
       double start = clock();
-      try{
-      	uint64_t result = divide_round_up(x, y);
-      }
-      catch(std::out_of_range & ex){
-      	continue;
-      }
+      ev.sub(ctexts[idx1], ctexts[idx2], result);
       //Get time in ms
       double duration = (clock() - start)/(double) CLOCKS_PER_MS;
-      cout << duration << endl;
+      result.release();
+      oss << duration << '\n';
     }
   }
+
+  cout << oss.str() << flush;
+
+  delete[] ctexts;
 
   return 0;
 }

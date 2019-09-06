@@ -19,7 +19,8 @@ int main(int argc, char ** argv){
   char c;
   unsigned int num_iterations = 0;
   unsigned int runtime = 0;
-  while((c = getopt(argc, argv, "n:t:")) != -1){
+  bool default_powers = true;
+  while((c = getopt(argc, argv, "n:t:p")) != -1){
     switch(c){
       case 'n':{
         num_iterations = atoi(optarg);
@@ -27,6 +28,10 @@ int main(int argc, char ** argv){
       }
       case 't':{
         runtime = atoi(optarg);
+        break;
+      }
+      case 'p':{
+        default_powers = false;
         break;
       }
     }
@@ -51,6 +56,9 @@ int main(int argc, char ** argv){
 
   //Setup SEAL
   SEALContainer sc;
+  if(!default_powers){
+    sc.set_ctext_moduli(1<<15);
+  }
   //Get plaintexts
   Plaintext px = sc.encoder->encode(x);
   Plaintext py = sc.encoder->encode(y);
