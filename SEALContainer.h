@@ -7,6 +7,8 @@
 #include <seal/seal.h>
 using namespace seal;
 
+const unsigned int DEGREE_DEFAULT = 8192;
+
 class SEALContainer{
 
 public:
@@ -22,7 +24,7 @@ Evaluator * evaluator;
 Decryptor * decryptor;
 IntegerEncoder * encoder;
 
-SEALContainer(unsigned int poly_modulus_degree = 4096, unsigned int plain_modulus = 1024){
+SEALContainer(unsigned int poly_modulus_degree = DEGREE_DEFAULT, unsigned int plain_modulus = 1024){
 	//Scheme type is hardcoded - change later to allow flexibility?
 	parms = new EncryptionParameters(scheme_type::BFV);
 	parms->set_poly_modulus_degree(poly_modulus_degree);
@@ -64,6 +66,10 @@ void set_ctext_moduli(uint64_t newmod){
 //Returns a reference so the application can avoid one level of indirection
 Evaluator & ev_ref(){
   return *evaluator;
+}
+
+RelinKeys & rlk_ref(){
+  return keygen->relin_keys();
 }
 
 

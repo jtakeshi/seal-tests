@@ -3,17 +3,25 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <chrono>
+#include <random>
 #include <stdexcept>
 #include <getopt.h>
 #include <seal/seal.h>
 
-#include "SEALContainer.h"
-
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
 
 using namespace std;
-using namespace seal;
-using namespace seal::util;
+using namespace std::chrono;
+
+//Shamelessly taken from https://stackoverflow.com/questions/2422712/rounding-integer-division-instead-of-truncating
+
+#define DWR(dividend, divisor) ((dividend + (divisor / 2)) / divisor)
+
+inline unsigned int round_closest(unsigned int dividend, unsigned int divisor)
+{
+    return (dividend + (divisor / 2)) / divisor;
+}
 
 int main(int argc, char ** argv){
 
@@ -75,23 +83,28 @@ int main(int argc, char ** argv){
   Evaluator & ev = sc.ev_ref();
   */
 
+  //Have to do all this to get rand. uint64s
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<uint64_t> dis(
+    std::numeric_limits<uint64_t>::min(),
+   std::numeric_limits<uint64_t>::max());
+
+  high_resolution_clock::time_point start, end;
+
   uint64_t x, y;
-  srand(5);
   //Run by iterations
   if(num_iterations){
     for(unsigned int i = 0; i < num_iterations; i++){
-      while((x = rand()) < 0){}
-      while((y = rand()) <= 0){}
-      double start = clock();	
-      try{
-      	uint64_t result = divide_round_up(x, y);
-      }
-      catch(std::out_of_range & ex){
-      	i--;
-      	continue;
-      }
-      //Get time in ms
-      double duration = (clock() - start)/(double) CLOCKS_PER_MS;
+      x = dis(gen);
+      y = dis(gen);
+      start = high_resolution_clock::now();	
+
+     	uint64_t result = DWR(x, y);
+      
+      //Get time in ns
+      end = high_resolution_clock::now();
+      double duration = duration_cast<chrono::nanoseconds>(end-start).count();
       cout << duration << endl;
     }
   }
@@ -99,17 +112,15 @@ int main(int argc, char ** argv){
   else{
     double loop_start = clock();
     while ((clock() - loop_start)/(double) CLOCKS_PER_SEC <= runtime){
-      while((x = rand()) < 0){}
-      while((y = rand()) <= 0){}	
-      double start = clock();
-      try{
-      	uint64_t result = divide_round_up(x, y);
-      }
-      catch(std::out_of_range & ex){
-      	continue;
-      }
-      //Get time in ms
-      double duration = (clock() - start)/(double) CLOCKS_PER_MS;
+      x = dis(gen);
+      y = dis(gen);	
+      start = high_resolution_clock::now(); 
+
+      uint64_t result = DWR(x, y);
+      
+      //Get time in ns
+      end = high_resolution_clock::now();
+      double duration = duration_cast<chrono::nanoseconds>(end-start).count();
       cout << duration << endl;
     }
   }
