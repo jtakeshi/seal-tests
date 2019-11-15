@@ -12,8 +12,6 @@
 
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
 
-#define BASELINE 0
-
 using namespace std;
 using namespace std::chrono;
 using namespace seal;
@@ -75,12 +73,12 @@ int main(int argc, char ** argv){
   if(num_iterations){
     for(unsigned int i = 0; i < num_iterations; i++){
       start = high_resolution_clock::now();
-#ifdef BASELINE      
+#ifndef BASELINE      
       ev.add_inplace(encx, ency);
 #endif      
       //Get time in ns
       end = high_resolution_clock::now();
-      double duration = duration_cast<chrono::microseconds>(end-start).count();
+      double duration = duration_cast<chrono::nanoseconds>(end-start).count();
       cout << duration << endl;
     }
   }
@@ -89,12 +87,12 @@ int main(int argc, char ** argv){
     double loop_start = clock();
     while ((clock() - loop_start)/(double) CLOCKS_PER_SEC <= runtime){
       start = high_resolution_clock::now();
-#ifdef BASELINE      
+#ifndef BASELINE      
       ev.add_inplace(encx, ency);
 #endif      
       //Get time in ms
       end = high_resolution_clock::now();
-      double duration = duration_cast<chrono::microseconds>(end-start).count();
+      double duration = duration_cast<chrono::nanoseconds>(end-start).count();
       cout << duration << endl;
     }
   }

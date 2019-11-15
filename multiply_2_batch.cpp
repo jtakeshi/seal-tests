@@ -13,7 +13,11 @@
 
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
 
-#define BASELINE 0
+#ifdef BASELINE
+#define TIME_UNITS nanoseconds
+#else
+#define TIME_UNITS microseconds
+#endif
 
 using namespace std;
 using namespace std::chrono;
@@ -93,16 +97,18 @@ int main(int argc, char ** argv){
         sc.encryptor->encrypt(px, encx);
       }
       //assert(sc.decryptor->invariant_noise_budget(encx));
-      cout << "Budget: " << sc.decryptor->invariant_noise_budget(encx) << endl;
+      //cout << "Budget: " << sc.decryptor->invariant_noise_budget(encx) << endl;
       start = high_resolution_clock::now();
-#ifdef BASELINE      
+#ifndef BASELINE      
       ev.multiply_inplace(encx, ency);
       ev.relinearize_inplace(encx, relin_keys);
 #endif      
-      //Get time in ms
+      //Get time in ms and ns
       end = high_resolution_clock::now();
-      double duration = duration_cast<chrono::microseconds>(end-start).count();
-      cout << duration << endl;
+      double micro_duration = duration_cast<chrono::microseconds>(end-start).count();
+      double nano_duration = duration_cast<chrono::nanoseconds>(end-start).count();
+      cout << "us " << micro_duration << endl;
+      cout << "ns " << nano_duration << endl;
     }
   }
   //Run by time
@@ -121,7 +127,7 @@ int main(int argc, char ** argv){
 #endif      
       //Get time in ms
       end = high_resolution_clock::now();
-      double duration = duration_cast<chrono::microseconds>(end-start).count();
+      double duration = duration_cast<chrono::TIME_UNITS>(end-start).count();
       cout << duration << endl;
       i++;
     }

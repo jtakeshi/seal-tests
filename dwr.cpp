@@ -30,7 +30,7 @@ int main(int argc, char ** argv){
   unsigned int num_iterations = 0;
   unsigned int runtime = 0;
   //bool default_powers = true;
-  while((c = getopt(argc, argv, "n:t:c:")) != -1){
+  while((c = getopt(argc, argv, "n:t:")) != -1){
     switch(c){
       case 'n':{
         num_iterations = atoi(optarg);
@@ -38,10 +38,6 @@ int main(int argc, char ** argv){
       }
       case 't':{
         runtime = atoi(optarg);
-        break;
-      }
-      case 'c':{
-        //Do nothing - don't need a number of ciphertexts
         break;
       }
     }
@@ -99,7 +95,7 @@ int main(int argc, char ** argv){
       x = dis(gen);
       y = dis(gen);
       start = high_resolution_clock::now();	
-#ifdef BASELINE
+#ifndef BASELINE
      	uint64_t result = DWR(x, y);
 #endif      
       //Get time in ns
