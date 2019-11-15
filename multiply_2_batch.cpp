@@ -1,15 +1,19 @@
-
+// g++ -pthread -I /usr/local/include -std=c++17 multiply_2_batch.cpp -o newparams_mult -L /usr/local/lib -lseal -O3
+//#define BASELINE to strip the actual computation
 #include <cstddef>
 #include <iostream>
 #include <fstream>
 #include <ctime>
 #include <chrono>
+#include <cassert>
 #include <getopt.h>
 #include <seal/seal.h>
 
 #include "SEALContainer.h"
 
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
+
+#define BASELINE 0
 
 using namespace std;
 using namespace std::chrono;
@@ -77,7 +81,7 @@ int main(int argc, char ** argv){
   //Get reference to Encryptor to obviate one indirection
   Evaluator & ev = sc.ev_ref();
   //Same for relin. keys
-  auto relin_keys = sc.rlk_ref();
+  auto relin_keys = sc.rlk();
 
   high_resolution_clock::time_point start, end;
 
@@ -88,12 +92,16 @@ int main(int argc, char ** argv){
       if(!(i%NUM_LEVELS)){
         sc.encryptor->encrypt(px, encx);
       }
+      //assert(sc.decryptor->invariant_noise_budget(encx));
+      cout << "Budget: " << sc.decryptor->invariant_noise_budget(encx) << endl;
       start = high_resolution_clock::now();
+#ifdef BASELINE      
       ev.multiply_inplace(encx, ency);
       ev.relinearize_inplace(encx, relin_keys);
-      //Get time in ns
+#endif      
+      //Get time in ms
       end = high_resolution_clock::now();
-      double duration = duration_cast<chrono::nanoseconds>(end-start).count();
+      double duration = duration_cast<chrono::microseconds>(end-start).count();
       cout << duration << endl;
     }
   }
@@ -107,11 +115,13 @@ int main(int argc, char ** argv){
         sc.encryptor->encrypt(px, encx);
       }
       start = high_resolution_clock::now();
+#ifdef BASELINE      
       ev.multiply_inplace(encx, ency);
       ev.relinearize_inplace(encx, relin_keys);
-      //Get time in ns
+#endif      
+      //Get time in ms
       end = high_resolution_clock::now();
-      double duration = duration_cast<chrono::nanoseconds>(end-start).count();
+      double duration = duration_cast<chrono::microseconds>(end-start).count();
       cout << duration << endl;
       i++;
     }

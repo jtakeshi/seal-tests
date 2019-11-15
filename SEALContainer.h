@@ -8,6 +8,7 @@
 using namespace seal;
 
 const unsigned int DEGREE_DEFAULT = 8192;
+const unsigned int PLAIN_DEFAULT = 1024;
 
 class SEALContainer{
 
@@ -23,8 +24,9 @@ Encryptor * encryptor;
 Evaluator * evaluator;
 Decryptor * decryptor;
 IntegerEncoder * encoder;
+//RelinKeys * relinearization_keys;
 
-SEALContainer(unsigned int poly_modulus_degree = DEGREE_DEFAULT, unsigned int plain_modulus = 1024){
+SEALContainer(unsigned int poly_modulus_degree = DEGREE_DEFAULT, unsigned int plain_modulus = PLAIN_DEFAULT){
 	//Scheme type is hardcoded - change later to allow flexibility?
 	parms = new EncryptionParameters(scheme_type::BFV);
 	parms->set_poly_modulus_degree(poly_modulus_degree);
@@ -68,7 +70,7 @@ Evaluator & ev_ref(){
   return *evaluator;
 }
 
-RelinKeys & rlk_ref(){
+RelinKeys rlk(){
   return keygen->relin_keys();
 }
 

@@ -1,4 +1,5 @@
-
+// g++ -std=c++17 dwr.cpp -o dwr -O3
+//#define BASELINE to strip the actual computation
 #include <cstddef>
 #include <iostream>
 #include <fstream>
@@ -7,7 +8,6 @@
 #include <random>
 #include <stdexcept>
 #include <getopt.h>
-#include <seal/seal.h>
 
 #define CLOCKS_PER_MS (CLOCKS_PER_SEC/1000)
 
@@ -99,9 +99,9 @@ int main(int argc, char ** argv){
       x = dis(gen);
       y = dis(gen);
       start = high_resolution_clock::now();	
-
+#ifdef BASELINE
      	uint64_t result = DWR(x, y);
-      
+#endif      
       //Get time in ns
       end = high_resolution_clock::now();
       double duration = duration_cast<chrono::nanoseconds>(end-start).count();
@@ -115,9 +115,9 @@ int main(int argc, char ** argv){
       x = dis(gen);
       y = dis(gen);	
       start = high_resolution_clock::now(); 
-
+#ifdef BASELINE
       uint64_t result = DWR(x, y);
-      
+#endif      
       //Get time in ns
       end = high_resolution_clock::now();
       double duration = duration_cast<chrono::nanoseconds>(end-start).count();
