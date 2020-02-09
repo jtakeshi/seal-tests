@@ -5,10 +5,12 @@
 #include <cstddef>
 #include <memory>
 #include <seal/seal.h>
+#include <cassert>
 using namespace seal;
 
 const unsigned int DEGREE_DEFAULT = 8192;
 const unsigned int PLAIN_DEFAULT = 1024;
+const sec_level_type = sec_level_type::tc128;
 
 class SEALContainer{
 
@@ -26,11 +28,30 @@ Decryptor * decryptor;
 IntegerEncoder * encoder;
 //RelinKeys * relinearization_keys;
 
-SEALContainer(unsigned int poly_modulus_degree = DEGREE_DEFAULT, unsigned int plain_modulus = PLAIN_DEFAULT){
+SEALContainer(unsigned int poly_modulus_degree = DEGREE_DEFAULT, unsigned int sec_level, unsigned int plain_modulus = PLAIN_DEFAULT){
 	//Scheme type is hardcoded - change later to allow flexibility?
 	parms = new EncryptionParameters(scheme_type::BFV);
 	parms->set_poly_modulus_degree(poly_modulus_degree);
-  parms->set_coeff_modulus(CoeffModulus::BFVDefault(poly_modulus_degree));
+  sec_level_type sec;
+  switch(sec_level){
+    case 128:{
+      sec = sec_level_type::tc128;
+      break;    
+    }
+    case 192:{
+      sec = sec_level_type::tc192;
+      break;
+    }
+    case 256:{
+      sec = sec_level_type::tc256;
+      break;
+    }
+    default:{
+      assert("Invalid security argument!" && 0);
+      break;
+    }
+  }
+  parms->set_coeff_modulus(CoeffModulus::BFVDefault(poly_modulus_degree, sec));
   //Create context
   parms->set_plain_modulus(plain_modulus);
   context = SEALContext::Create(*parms);
