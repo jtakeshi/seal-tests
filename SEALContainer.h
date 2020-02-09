@@ -10,7 +10,7 @@ using namespace seal;
 
 const unsigned int DEGREE_DEFAULT = 8192;
 const unsigned int PLAIN_DEFAULT = 1024;
-const sec_level_type = sec_level_type::tc128;
+const unsigned int SEC_DEFAULT = 128;
 
 class SEALContainer{
 
@@ -28,7 +28,7 @@ Decryptor * decryptor;
 IntegerEncoder * encoder;
 //RelinKeys * relinearization_keys;
 
-SEALContainer(unsigned int poly_modulus_degree = DEGREE_DEFAULT, unsigned int sec_level, unsigned int plain_modulus = PLAIN_DEFAULT){
+SEALContainer(unsigned int poly_modulus_degree = DEGREE_DEFAULT, unsigned int sec_level = 128, unsigned int plain_modulus = PLAIN_DEFAULT){
 	//Scheme type is hardcoded - change later to allow flexibility?
 	parms = new EncryptionParameters(scheme_type::BFV);
 	parms->set_poly_modulus_degree(poly_modulus_degree);

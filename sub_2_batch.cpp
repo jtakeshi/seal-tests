@@ -1,4 +1,4 @@
-//g++ -pthread -I /usr/local/include -std=c++17 add_2_batch.cpp -o add -L /usr/local/lib -lseal -O3
+//g++ -pthread -I /usr/local/include -std=c++17 sub_2_batch.cpp -o newparams_sub -L /usr/local/lib -lseal -O3
 //#define BASELINE to strip the actual computation
 #include <cstddef>
 #include <iostream>
@@ -84,7 +84,7 @@ int main(int argc, char ** argv){
     for(unsigned int i = 0; i < num_iterations; i++){
       start = high_resolution_clock::now();
 #ifndef BASELINE      
-      ev.add_inplace(encx, ency);
+      ev.sub_inplace(encx, ency);
 #endif      
       //Get time in ns
       end = high_resolution_clock::now();
@@ -98,7 +98,7 @@ int main(int argc, char ** argv){
     while ((clock() - loop_start)/(double) CLOCKS_PER_SEC <= runtime){
       start = high_resolution_clock::now();
 #ifndef BASELINE      
-      ev.add_inplace(encx, ency);
+      ev.sub_inplace(encx, ency);
 #endif      
       //Get time in ms
       end = high_resolution_clock::now();

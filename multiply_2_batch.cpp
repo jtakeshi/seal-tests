@@ -31,8 +31,10 @@ int main(int argc, char ** argv){
   char c;
   unsigned int num_iterations = 0;
   unsigned int runtime = 0;
-  bool default_powers = true;
-  while((c = getopt(argc, argv, "n:t:p")) != -1){
+  //bool default_powers = true;
+  unsigned int poly_degree = 0;
+  unsigned int sec_level = 0;
+  while((c = getopt(argc, argv, "n:t:d:s:")) != -1){
     switch(c){
       case 'n':{
         num_iterations = atoi(optarg);
@@ -42,8 +44,12 @@ int main(int argc, char ** argv){
         runtime = atoi(optarg);
         break;
       }
-      case 'p':{
-        default_powers = false;
+      case 'd':{
+        poly_degree = atoi(optarg);
+        break;
+      }
+      case 's':{
+        sec_level = atoi(optarg);
         break;
       }
     }
@@ -70,11 +76,13 @@ int main(int argc, char ** argv){
   y = rand();
 
   //Setup SEAL
-  SEALContainer sc;
+  SEALContainer sc(poly_degree, sec_level);
   //Remove this?
+  /*
   if(!default_powers){
     sc.set_ctext_moduli(1<<15);
   }
+  */
   //Get plaintexts
   Plaintext px = sc.encoder->encode(x);
   Plaintext py = sc.encoder->encode(y);
