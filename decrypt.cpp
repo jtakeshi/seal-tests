@@ -1,4 +1,4 @@
-// g++ -pthread -I /usr/local/include -std=c++17 multiply_2_batch.cpp -o newparams_mult -L /usr/local/lib -lseal -O3
+// g++ -pthread -I /usr/local/include -std=c++17 decrypt.cpp -o decrypt -L /usr/local/lib -lseal -O3
 //#define BASELINE to strip the actual computation
 #include <cstddef>
 #include <iostream>
@@ -120,10 +120,12 @@ int main(int argc, char ** argv){
         sc.encryptor->encrypt(px, encx);
       }
       start = high_resolution_clock::now();
+      /*
 #ifdef BASELINE      
       ev.multiply_inplace(encx, ency);
       ev.relinearize_inplace(encx, relin_keys);
 #endif      
+*/
       //Get time in ms
       end = high_resolution_clock::now();
       double duration = duration_cast<chrono::TIME_UNITS>(end-start).count();

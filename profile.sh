@@ -1,5 +1,5 @@
 #!/bin/bash
-#Arguments are: executable powerstat_outfile time_outfile num_iterations num_ciphertexts
+#Arguments are: executable powerstat_outfile time_outfile num_iterations poly_mod_deg sec_level
 #Assumes calc is installed, to do float division for total number of samples
 MAXARG=128
 #Time to run powerstat for (seconds)
@@ -27,10 +27,14 @@ fi
 A=$RANDOM%$MAXARG
 B=$RANDOM%$MAXARG
 #Choose the number of ciphertexts (if applicable)
-C=$5
+#C=$5
+#Get args
+POLY_DEG=$5
+SEC_LEVEL=$6
 #Fork off powerstat with 0 delay
 powerstat -d 0 $PSTAT_GRANULARITY $PSTAT_SAMPLES > $2 2>&1 &
 #Run program
-$1 $EXEC_MODE $EXEC_ARG -c $C > $3
+#$1 $EXEC_MODE $EXEC_ARG -c $C > $3
+$1 $EXEC_MODE $EXEC_ARG -d $POLY_DEG -s $SEC_LEVEL > $3
 #Kill powerstat
 kill -s SIGINT $!
