@@ -14,7 +14,7 @@
 ./prof_batch_time decrypt
 
 #Might as well have the CRC do the stats work as well
-python stats.py ./results/time/SAC/*/*.csv > ./crc_report.txt
+python stats.py ./results/time/SAC/add/*.csv ./results/time/SAC/sub/*.csv ./results/time/SAC/mult/*.csv ./results/time/SAC/encrypt/*.csv ./results/time/SAC/decrypt/*.csv > ./crc_report.txt
 
 ./prof_batch_time cachetest
 ./prof_batch_time cachetest_baseline
